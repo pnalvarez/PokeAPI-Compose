@@ -1,4 +1,6 @@
-package com.example.pokeapi
+package com.example.pokeapi.common
+
+import com.example.pokeapi.list.PokemonListItem
 
 sealed class ApiResponse {
     data class Success(val data: List<PokemonListItem>): ApiResponse()

@@ -1,4 +1,4 @@
-package com.example.pokeapi
+package com.example.pokeapi.list
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

@@ -1,7 +1,6 @@
-package com.example.pokeapi
+package com.example.pokeapi.list
 
 import android.util.Log
-import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,12 +17,10 @@ class PokemonListViewModel @Inject constructor(
     private val _pokemonList = MutableStateFlow<PokemonListModel?>(null)
     private val _errorMessage = MutableStateFlow<String?>(null)
     private val _isLoading = MutableStateFlow<Boolean>(true)
-    private val _images = MutableStateFlow<List<PokemonSpritesModel>>(listOf())
 
     val pokemonList: StateFlow<PokemonListModel?> get() = _pokemonList.asStateFlow()
     val errorMessage: StateFlow<String?> get() = _errorMessage.asStateFlow()
     val isLoading: StateFlow<Boolean> get() = _isLoading.asStateFlow()
-    val images: StateFlow<List<PokemonSpritesModel>> = _images.asStateFlow()
 
     fun getPokemonList() {
         viewModelScope.launch {

@@ -1,5 +1,7 @@
-package com.example.pokeapi
+package com.example.pokeapi.common
 
+import com.example.pokeapi.details.PokemonDetailsModel
+import com.example.pokeapi.list.PokemonListModel
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -13,7 +15,7 @@ interface APIService {
     ): Response<PokemonListModel>
 
     @GET("pokemon/{name}")
-    suspend fun getPokemonSprites(
+    suspend fun getPokemonDetails(
         @Path("name") name: String
-    ): Response<PokemonSpritesModel>
+    ): Response<PokemonDetailsModel>
 }
