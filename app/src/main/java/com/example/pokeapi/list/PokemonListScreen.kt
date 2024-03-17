@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
@@ -30,14 +31,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.paging.PagingData
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.pokeapi.R
 import com.example.pokeapi.common.ErrorState
+import kotlinx.coroutines.flow.collect
 
 @Composable
 fun PokemonListScreen(
     navController: NavController,
     viewModel: PokemonListViewModel = hiltViewModel()
 ) {
+    val pagingData = viewModel.pagingData.collectAsLazyPagingItems()
     val pokemonList = viewModel.pokemonList.collectAsState()
     val isLoading = viewModel.isLoading.collectAsState()
     val errorMessage = viewModel.errorMessage.collectAsState()
@@ -76,18 +81,16 @@ fun PokemonListScreen(
                 }
             } else {
                 LazyColumn {
-                    pokemonList.value?.let {results ->
-                        items(results.results.size) { index ->
-                            val name = results.results[index].name
-                            PokemonCell(
-                                modifier = Modifier
-                                    .clickable {
-                                        navController.navigate("details/$name")
-                                               },
-                                index = "$index",
-                                name = name
-                            )
-                        }
+                    items(pagingData.itemCount) {
+                        val name = pagingData[it]?.name ?: ""
+                        PokemonCell(
+                            modifier = Modifier
+                                .clickable {
+                                    navController.navigate("details/$name")
+                                },
+                            index = "${it+1}",
+                            name = name
+                        )
                     }
                 }
             }
