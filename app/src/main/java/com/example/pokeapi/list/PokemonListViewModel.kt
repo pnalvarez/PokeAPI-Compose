@@ -22,6 +22,10 @@ class PokemonListViewModel @Inject constructor(
     private val _pagingData: MutableStateFlow<PagingData<PokemonListItem>> = MutableStateFlow(PagingData.empty())
     val pagingData: StateFlow<PagingData<PokemonListItem>> get() = _pagingData.asStateFlow()
 
+    init {
+        getPokemonList()
+    }
+
     fun getPokemonList() {
         viewModelScope.launch {
             getPokemon()

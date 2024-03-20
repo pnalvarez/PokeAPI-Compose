@@ -45,10 +45,6 @@ fun PokemonListScreen(
 ) {
     val pagingData = viewModel.pagingData.collectAsLazyPagingItems()
 
-    LaunchedEffect(pagingData) {
-        viewModel.getPokemonList()
-    }
-
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
