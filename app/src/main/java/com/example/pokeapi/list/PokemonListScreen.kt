@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.pokeapi.R
@@ -43,11 +44,10 @@ fun PokemonListScreen(
     viewModel: PokemonListViewModel = hiltViewModel()
 ) {
     val pagingData = viewModel.pagingData.collectAsLazyPagingItems()
-    val pokemonList = viewModel.pokemonList.collectAsState()
     val isLoading = viewModel.isLoading.collectAsState()
     val errorMessage = viewModel.errorMessage.collectAsState()
 
-    LaunchedEffect(pokemonList) {
+    LaunchedEffect(pagingData) {
         viewModel.getPokemonList()
     }
 
@@ -91,6 +91,29 @@ fun PokemonListScreen(
                             index = "${it+1}",
                             name = name
                         )
+                    }
+                    pagingData.apply {
+                        when {
+                            loadState.refresh is LoadState.Loading -> {
+                                item { CircularProgressIndicator() }
+                            }
+
+                            loadState.refresh is LoadState.Error -> {
+                                item {
+                                    ErrorState()
+                                }
+                            }
+
+                            loadState.append is LoadState.Loading -> {
+                                item { CircularProgressIndicator() }
+                            }
+
+                            loadState.append is LoadState.Error -> {
+                                item {
+                                    ErrorState()
+                                }
+                            }
+                        }
                     }
                 }
             }

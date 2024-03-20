@@ -10,40 +10,34 @@ import javax.inject.Inject
 class PokemonListPagingSource @Inject constructor(
     private val repository: PokemonListRepositoryInterface
 ): PagingSource<Int, PokemonListItem>() {
-    override fun getRefreshKey(state: PagingState<Int, PokemonListItem>): Int? = null
+    override fun getRefreshKey(state: PagingState<Int, PokemonListItem>): Int? =
+        state.anchorPosition?.let {
+            state.closestPageToPosition(it)?.prevKey?.plus(PokemonListDataSourceFactory.NETWORK_PAGE_SIZE)
+                ?: state.closestPageToPosition(it)?.nextKey?.minus(PokemonListDataSourceFactory.NETWORK_PAGE_SIZE)
+        }
 
     override suspend fun load(params: LoadParams<Int>):
             LoadResult<Int, PokemonListItem> = try {
-        val offset = params.key ?: 0
-        val limit = 30 // Page size
+        val position = params.key ?: 1
+        val pageSize = params.loadSize
+        val response = repository.getPokemonList(position, pageSize)
+        Log.d("Pagination event", "Offset = $position Limit = ${pageSize}")
+        val error = response.errorBody()
+        val data = response.body()
 
-        // Call the API to fetch the Pokémon list with the calculated offset and limit
-        val response = repository.getPokemonList(offset, limit)
-
-        if (response.isSuccessful) {
-            // Extract the Pokémon list from the response
-            val pokemonList = response.body()?.results
-
-            // Calculate the next page number (offset) for pagination
-            val nextPage = if (pokemonList?.isEmpty() == true) {
-                null // If the response is empty, there are no more pages
-            } else {
-                offset + limit
-            }
-
-            Log.d("Paged Results", "${pokemonList!!.size}")
-            // Return the loaded data along with the next page number for pagination
+        if(error != null) {
+            LoadResult.Error(throw Exception("No Response"))
+        } else if(data != null) {
+            Log.d("Results", "${data.results.size}")
             LoadResult.Page(
-                data = pokemonList!!,
-                prevKey = if (offset == 0) null else offset - limit,
-                nextKey = nextPage
+                data = data.results,
+                prevKey = if (position < pageSize) null else (position - pageSize),
+                nextKey = if (position >= 1302) null else (position + pageSize)
             )
         } else {
-            // If the API call was not successful, return an error
-            LoadResult.Error(Exception("Failed to fetch Pokémon"))
+            LoadResult.Error(throw Exception("No Response"))
         }
     } catch (e: Exception) {
-        // Handle any exceptions and return an error
         LoadResult.Error(e)
     }
 }
