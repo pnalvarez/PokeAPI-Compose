@@ -63,13 +63,11 @@ fun PokemonListScreen(
                 items(pagingData.itemCount) {
                     val name = pagingData[it]?.name ?: ""
                     PokemonCell(
-                        modifier = Modifier
-                            .clickable {
-                                navController.navigate("details/$name")
-                            },
                         index = "${it+1}",
                         name = name
-                    )
+                    ) {
+                        navController.navigate("details/$name")
+                    }
                 }
                 pagingData.apply {
                     when {
@@ -103,11 +101,13 @@ fun PokemonListScreen(
 private fun PokemonCell(
     modifier: Modifier = Modifier,
     index: String,
-    name: String
+    name: String,
+    onClick: () -> Unit
 ) {
     Column(modifier = modifier
         .fillMaxWidth()
-        .height(64.dp),
+        .clickable { onClick() }
+        .padding(top = 20.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.Start) {
         Row(

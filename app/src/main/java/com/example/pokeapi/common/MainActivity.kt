@@ -12,7 +12,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             PokeAPITheme {
-                // A surface container using the 'background' color from the theme
                 PokeAPIApp()
             }
         }
