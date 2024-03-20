@@ -18,12 +18,6 @@ import javax.inject.Inject
 class PokemonListViewModel @Inject constructor(
     private val repository: PokemonListRepositoryInterface
 ): ViewModel() {
-    private val _errorMessage = MutableStateFlow<String?>(null)
-    private val _isLoading = MutableStateFlow<Boolean>(true)
-
-    val errorMessage: StateFlow<String?> get() = _errorMessage.asStateFlow()
-    val isLoading: StateFlow<Boolean> get() = _isLoading.asStateFlow()
-
     private val dataSourceFactory = PokemonListDataSourceFactory(repository)
     private val _pagingData: MutableStateFlow<PagingData<PokemonListItem>> = MutableStateFlow(PagingData.empty())
     val pagingData: StateFlow<PagingData<PokemonListItem>> get() = _pagingData.asStateFlow()

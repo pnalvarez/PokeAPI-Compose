@@ -44,8 +44,6 @@ fun PokemonListScreen(
     viewModel: PokemonListViewModel = hiltViewModel()
 ) {
     val pagingData = viewModel.pagingData.collectAsLazyPagingItems()
-    val isLoading = viewModel.isLoading.collectAsState()
-    val errorMessage = viewModel.errorMessage.collectAsState()
 
     LaunchedEffect(pagingData) {
         viewModel.getPokemonList()
@@ -65,53 +63,37 @@ fun PokemonListScreen(
             ) {
                 Text(text = "Reload")
             }
-
-            if (errorMessage.value != null) {
-                ErrorState()
-            } else if (isLoading.value) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(200.dp),
-                        color = Color.Blue,
-                        trackColor = Color.Red
+            LazyColumn {
+                items(pagingData.itemCount) {
+                    val name = pagingData[it]?.name ?: ""
+                    PokemonCell(
+                        modifier = Modifier
+                            .clickable {
+                                navController.navigate("details/$name")
+                            },
+                        index = "${it+1}",
+                        name = name
                     )
                 }
-            } else {
-                LazyColumn {
-                    items(pagingData.itemCount) {
-                        val name = pagingData[it]?.name ?: ""
-                        PokemonCell(
-                            modifier = Modifier
-                                .clickable {
-                                    navController.navigate("details/$name")
-                                },
-                            index = "${it+1}",
-                            name = name
-                        )
-                    }
-                    pagingData.apply {
-                        when {
-                            loadState.refresh is LoadState.Loading -> {
-                                item { CircularProgressIndicator() }
-                            }
+                pagingData.apply {
+                    when {
+                        loadState.refresh is LoadState.Loading -> {
+                            item { CircularProgressIndicator() }
+                        }
 
-                            loadState.refresh is LoadState.Error -> {
-                                item {
-                                    ErrorState()
-                                }
+                        loadState.refresh is LoadState.Error -> {
+                            item {
+                                ErrorState()
                             }
+                        }
 
-                            loadState.append is LoadState.Loading -> {
-                                item { CircularProgressIndicator() }
-                            }
+                        loadState.append is LoadState.Loading -> {
+                            item { CircularProgressIndicator() }
+                        }
 
-                            loadState.append is LoadState.Error -> {
-                                item {
-                                    ErrorState()
-                                }
+                        loadState.append is LoadState.Error -> {
+                            item {
+                                ErrorState()
                             }
                         }
                     }
