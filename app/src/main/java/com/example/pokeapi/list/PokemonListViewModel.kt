@@ -16,17 +16,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PokemonListViewModel @Inject constructor(
-    private val repository: PokemonListRepositoryInterface
+    private val dataSourceFactory: PokemonListDataSourceFactory
 ): ViewModel() {
-    private val dataSourceFactory = PokemonListDataSourceFactory(repository)
     private val _pagingData: MutableStateFlow<PagingData<PokemonListItem>> = MutableStateFlow(PagingData.empty())
     val pagingData: StateFlow<PagingData<PokemonListItem>> get() = _pagingData.asStateFlow()
 
     init {
-        getPokemonList()
-    }
-
-    fun getPokemonList() {
         viewModelScope.launch {
             getPokemon()
         }

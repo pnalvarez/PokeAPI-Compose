@@ -32,6 +32,13 @@ object PokemonListModule {
     fun providePokemonListRepository(apiService: APIService): PokemonListRepository {
         return PokemonListRepository(apiService)
     }
+
+    @Provides
+    fun providePokemonListDataSourceFactory(
+        repository: PokemonListRepositoryInterface
+    ): PokemonListDataSourceFactoryInterface {
+        return PokemonListDataSourceFactory(repository)
+    }
 }
 
 @Module
@@ -39,4 +46,6 @@ object PokemonListModule {
 interface PokemonListModuleInterface {
     @Binds
     abstract fun bindPokemonListRepository(impl: PokemonListRepository): PokemonListRepositoryInterface
+    @Binds
+    abstract fun bindPokemonListDataSourceFactory(impl: PokemonListDataSourceFactory): PokemonListDataSourceFactoryInterface
 }

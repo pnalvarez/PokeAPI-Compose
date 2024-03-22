@@ -1,5 +1,6 @@
 package com.example.pokeapi.list
 
+import android.widget.ScrollView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -54,12 +55,8 @@ fun PokemonListScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-            Button(
-                onClick = { viewModel.getPokemonList() }
-            ) {
-                Text(text = "Reload")
-            }
             LazyColumn {
+                // Iterate through paging data list
                 items(pagingData.itemCount) {
                     val name = pagingData[it]?.name ?: ""
                     PokemonCell(
@@ -69,22 +66,27 @@ fun PokemonListScreen(
                         navController.navigate("details/$name")
                     }
                 }
+                // Check refreshing state for paging data
                 pagingData.apply {
                     when {
+                        // FIRST LOAD
                         loadState.refresh is LoadState.Loading -> {
                             item { CircularProgressIndicator() }
                         }
 
+                        // GOT ERROR ON FIRST LOAD
                         loadState.refresh is LoadState.Error -> {
                             item {
                                 ErrorState()
                             }
                         }
 
+                        // LOADING A NEXT PAGE
                         loadState.append is LoadState.Loading -> {
                             item { CircularProgressIndicator() }
                         }
 
+                        // GOT AN ERROR AFTER LOADING SOME SUBSEQUENT PAGE
                         loadState.append is LoadState.Error -> {
                             item {
                                 ErrorState()
